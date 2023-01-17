@@ -48,7 +48,12 @@ jobs:
         aws-region: ${{ env.AWS_REGION }}
     
     - name: Upload to AWS S3
-      run: aws s3 cp --region ap-northeast-2 ./$GITHUB_SHA.zip s3://$GITHUB_SHA.zip
+      run: |
+        aws deploy push \
+        --application-name $ {{ env.CODE_DEPLOYMENT_APPLICATION_NAME }} \
+        --ignore-hidden-files \
+        --s3-location s3://$S3_BUCKET_NAME/$GITHUB_SHA.zip \
+        --source .
           
     - name: Deploy to AWS EC2 from S3
       run: |
