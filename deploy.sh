@@ -1,20 +1,15 @@
-REPOSITORY=/home/ubuntu/app
-cd $REPOSITORY
+PROJECT_ROOT="/home/ubuntu/app"
+JAR_FILE="$PROJECT_ROOT/cicd_test.jar"
 
-APP_NAME=cicd_test
-JAR_NAME=$(ls $REPOSITORY/build/libs/ | grep '.jar' | tail -n 1)
-JAR_PATH=$REPOSITORY/build/libs/$JAR_NAME
+APP_LOG="$PROJECT_ROOT/application.log"
+ERROR_LOG="$PROJECT_ROOT/error.log"
+DEPLOY_LOG="$PROJECT_ROOT/deploy.log"
 
-CURRENT_PID=$(pgrep -f $APP_NAME)
+TIME_NOW=$(date +%c)
 
-if [ -z $CURRENT_PID ]
-then
-  echo "> 현재 구동중인 애플리케이션이 없으므로 종료하지 않습니다."
-else
-  echo "> kill -15 $CURRENT_PID"
-  sudo kill -15 $CURRENT_PID
-  sleep 5
-fi
+# build 파일 복사
+echo "$TIME_NOW > $JAR_FILE 파일 복사" >> $DEPLOY_LOG
+nohup java -jar $JAR_FILE > $APP_LOG 2> $ERROR_LOG &
 
-echo ">$JAR_PATH 배포"
-nohup java -jar /home/ubuntu/app/build/libs/cicd_test-1.0.jar
+CURRENT_PID=${pgrep -f $JAR_FILE)
+echo "$TIME_NOW > 실행된 프로세스 아이디 $CURRENT_PID 입니다. >> $DEPLOY_LOG
